@@ -13,7 +13,7 @@ require (
 	github.com/google/go-containerregistry v0.20.6
 	github.com/mattn/go-runewidth v0.0.16
 	github.com/mistakenelf/teacup v0.4.1
-	github.com/urfave/cli/v3 v3.4.1
+	github.com/urfave/cli/v3 v3.6.0
 	k8s.io/api v0.31.2
 	k8s.io/apimachinery v0.31.2
 )
