@@ -289,7 +289,9 @@ func (m Model) traceToRows(v *xplane.Resource, rows *[]navigator.DataRow, depth 
 			HeaderKeyReadyLast:  getTimeStr(resStatus.ReadyLastTransition),
 			HeaderKeyStatus:     resStatus.Status,
 		}
-		if !resStatus.Ok {
+		// NOTE: in cases where a resource relies on auto-ready, such as kubernetes MRs in Crossplane v2, the synced/ready will
+		// always be "-". To avoid it to be shown in red, the second conditional has been added.
+		if !resStatus.Ok && (resStatus.Synced != "-" || resStatus.Ready != "-") {
 			row.Color = lipgloss.ANSIColor(ansi.Red)
 		}
 	}
