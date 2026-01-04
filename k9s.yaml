@@ -11,4 +11,4 @@ plugins:
     background: false
     args:
       - -c
-      - xpdig trace -n $([[ $NAMESPACE = "-" ]] && echo "default" || echo "$NAMESPACE") $RESOURCE_NAME.$RESOURCE_GROUP/$NAME
+      - xpdig trace -n $([[ $NAMESPACE = "-" ]] && echo "default" || echo "$NAMESPACE") --context $CONTEXT $RESOURCE_NAME.$RESOURCE_GROUP/$NAME
