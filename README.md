@@ -6,7 +6,7 @@
   🧰 A terminal based UI to explore Crossplane traces
 </p>
 
-![demo gif](./demo.gif)
+![screenshot](./screenshot.png)
 
 `xpdig` provides a terminal based UI (similar to `k9s`) to interactively explore
 Crossplane traces,

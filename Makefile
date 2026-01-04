@@ -1,11 +1,5 @@
 .PHONY: vhs-rec vhs-out ci
 
-vhs-rec:
-	vhs record > cassette.tape
-
-vhs-out:
-	vhs cassette.tape
-
 # Replace this by nix or similar
 install:
 	go install mvdan.cc/gofumpt@v0.8.0
