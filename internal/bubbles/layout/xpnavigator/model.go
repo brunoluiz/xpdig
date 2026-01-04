@@ -27,6 +27,7 @@ const (
 	HeaderKeyState         = "STATE"
 
 	HeaderKeyGroup      = "GROUP"
+	HeaderKeyResource   = "RESOURCE"
 	HeaderKeySynced     = "SYNCED"
 	HeaderKeySyncedLast = "SYNCED LAST"
 	HeaderKeyReady      = "READY"
@@ -156,6 +157,7 @@ func (m Model) getColumns(layout ColumnLayout) []table.Column {
 		return []table.Column{
 			{Title: HeaderKeyObject, Width: 60},
 			{Title: HeaderKeyGroup, Width: 30},
+			{Title: HeaderKeyResource, Width: 25},
 			{Title: HeaderKeySynced, Width: 7},
 			{Title: HeaderKeyReady, Width: 7},
 			{Title: HeaderKeyStatus, Width: 68},
@@ -164,6 +166,7 @@ func (m Model) getColumns(layout ColumnLayout) []table.Column {
 		return []table.Column{
 			{Title: HeaderKeyObject, Width: 60},
 			{Title: HeaderKeyGroup, Width: 30},
+			{Title: HeaderKeyResource, Width: 25},
 			{Title: HeaderKeySynced, Width: 7},
 			{Title: HeaderKeySyncedLast, Width: 19},
 			{Title: HeaderKeyReady, Width: 7},
@@ -279,6 +282,7 @@ func (m Model) traceToRows(v *xplane.Resource, rows *[]navigator.DataRow, depth 
 		data = map[string]string{
 			HeaderKeyObject:     label,
 			HeaderKeyGroup:      group,
+			HeaderKeyResource:   resStatus.ResourceName,
 			HeaderKeySynced:     resStatus.Synced,
 			HeaderKeySyncedLast: getTimeStr(resStatus.SyncedLastTransition),
 			HeaderKeyReady:      resStatus.Ready,
