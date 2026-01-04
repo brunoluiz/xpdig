@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xconfigmap-kubernetes
+  name: configs-kubernetes
 spec:
   compositeTypeRef:
     apiVersion: kubernetes.acme.com/v1alpha1
-    kind: XConfigMap
+    kind: Config
   mode: Pipeline
   pipeline:
     - step: patch-and-transform
@@ -15,17 +15,16 @@ spec:
         apiVersion: pt.fn.crossplane.io/v1beta1
         kind: Resources
         resources:
-          - name: namespace
+          - name: configmap-default
             base:
               apiVersion: v1
-              kind: Namespace
+              kind: ConfigMap
               metadata:
-                name: # patched
-            patches:
-              - type: FromCompositeFieldPath
-                fromFieldPath: "spec.namespace"
-                toFieldPath: "metadata.name"
-          - name: configmap
+                name: default
+                namespace: # patched
+              data:
+                foo: bar
+          - name: configmap-example
             base:
               apiVersion: v1
               kind: ConfigMap
@@ -46,34 +45,3 @@ spec:
     - step: automatically-detect-readiness
       functionRef:
         name: function-auto-ready
----
-apiVersion: apiextensions.crossplane.io/v2
-kind: CompositeResourceDefinition
-metadata:
-  name: xconfigmaps.kubernetes.acme.com
-spec:
-  group: kubernetes.acme.com
-  names:
-    kind: XConfigMap
-    plural: xconfigmaps
-  claimNames:
-    kind: ConfigMapClaim
-    plural: configmapclaims
-  versions:
-    - name: v1alpha1
-      served: true
-      referenceable: true
-      schema:
-        openAPIV3Schema:
-          type: object
-          properties:
-            spec:
-              type: object
-              properties:
-                data:
-                  type: object
-                  additionalProperties:
-                    type: string
-                namespace:
-                  type: string
-                  default: default
