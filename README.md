@@ -22,7 +22,8 @@ making it easier to navigate, debug and understand objects. It leverages
 to separately execute `kubectl`
 - 🔨 Use your own `$PAGER` and `$EDITOR` when exploring the traces
 - 📋 Copy full qualified objects names straight from UI (API group + Kind + name)
-- ♻️ Automatic refresh
+via shortcut (`c`)
+- ♻️ Automatically watch for changes on the resource
 
 ## 📀 Install
 
@@ -55,7 +56,7 @@ go install github.com/brunoluiz/xpdig/cmd/xpdig@latest
 
 ## ⚙️ Usage
 
-```
+```bash
 # Loading a trace
 ## It supports XRs (non-namespaced objects)
 xpdig trace XObject/hello-world
@@ -74,10 +75,11 @@ crossplane beta trace -o json <> | xpdig trace --stdin
 
 - `h/?`: show help
 - `arrow keys or j/k`: cursor up/down
+- `c`: copies full qualified name to clipboard (API group + Kind + name)
 - `enter/d`: executes `kubectl describe` on the resource
 - `y`: executes `kubectl get` on the resource
 - `e`: executes `kubectl edit` on the resource
-- `ctrl+d`: executes `kubectl delete` on the resource
+- `ctrl+d`: executes `kubectl delete` on the resource (bear in mind it might dangle waiting for finalisers)
 - `/`: search (ENTER to submit, ESC to clear)
 - `n/N`: navigate between search results
 - `ctrl+f/ctrl+b | pageUp/pageDown`: jumps full page of results (up or down)
