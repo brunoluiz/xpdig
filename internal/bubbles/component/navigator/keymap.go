@@ -22,6 +22,8 @@ type KeyMap struct {
 	Edit          key.Binding
 	Delete        key.Binding
 	Describe      key.Binding
+	Pause         key.Binding
+	Unpause         key.Binding
 	Help          key.Binding
 	CloseFullHelp key.Binding
 }
@@ -94,6 +96,12 @@ func DefaultKeyMap() KeyMap {
 		Describe: key.NewBinding(
 			key.WithKeys("enter", "d"),
 			key.WithHelp("d", "describe")),
+		Pause: key.NewBinding(
+			key.WithKeys("p"),
+			key.WithHelp("p", "pause")),
+		Unpause: key.NewBinding(
+			key.WithKeys("u"),
+			key.WithHelp("u", "unpause")),
 		Help: key.NewBinding(
 			key.WithKeys("?", "h"),
 			key.WithHelp("?/h", "toogle help"),

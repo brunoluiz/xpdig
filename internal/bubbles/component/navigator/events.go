@@ -39,6 +39,16 @@ type EventItemDelete struct {
 	Data any
 }
 
+type EventItemPause struct {
+	ID   string
+	Data any
+}
+
+type EventItemUnpause struct {
+	ID   string
+	Data any
+}
+
 type EventQuitted struct{}
 
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
@@ -240,6 +250,14 @@ func (m *Model) onKey(msg tea.KeyMsg) tea.Cmd {
 	case key.Matches(msg, m.KeyMap.Describe):
 		return func() tea.Msg {
 			return EventItemDescribe{ID: m.Current().ID, Data: m.Current().Data}
+		}
+	case key.Matches(msg, m.KeyMap.Pause):
+		return func() tea.Msg {
+			return EventItemPause{ID: m.Current().ID, Data: m.Current().Data}
+		}
+	case key.Matches(msg, m.KeyMap.Unpause):
+		return func() tea.Msg {
+			return EventItemUnpause{ID: m.Current().ID, Data: m.Current().Data}
 		}
 	case key.Matches(msg, m.KeyMap.Quit):
 		return func() tea.Msg {
