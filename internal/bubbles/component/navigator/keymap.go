@@ -23,7 +23,7 @@ type KeyMap struct {
 	Delete        key.Binding
 	Describe      key.Binding
 	Pause         key.Binding
-	Unpause         key.Binding
+	Unpause       key.Binding
 	Help          key.Binding
 	CloseFullHelp key.Binding
 }

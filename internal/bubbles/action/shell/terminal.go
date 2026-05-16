@@ -21,7 +21,7 @@ func New(logger *slog.Logger) *Cmd {
 func (s *Cmd) Exec(c string, args ...string) tea.Cmd {
 	s.logger.Info("executing shell", "cmd", c, "args", args)
 
-	cmd := exec.Command(c, args...)
+	cmd := exec.Command(c, args...) //nolint:gosec // intentional shell execution utility
 	// Inherit environment so $EDITOR is respected
 	cmd.Env = os.Environ()
 	// Attach to the user's terminal

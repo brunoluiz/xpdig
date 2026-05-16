@@ -240,7 +240,7 @@ func (m Model) traceToRows(v *xplane.Resource, rows *[]navigator.DataRow, depth 
 	// Build tree prefix
 	var prefix string
 	if depth > 0 {
-		for i := 0; i < depth-1; i++ {
+		for i := 0; i < depth-1 && i < len(isLastChilds); i++ {
 			if isLastChilds[i] {
 				prefix += "   "
 			} else {

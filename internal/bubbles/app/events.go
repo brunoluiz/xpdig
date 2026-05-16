@@ -37,50 +37,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case navigator.EventQuitted:
 		return m, tea.Interrupt
 	case navigator.EventItemGet:
-		trace, ok := msg.Data.(*xplane.Resource)
-		if !ok {
-			return m, nil
-		}
-		ns, _ := ds.GetPath[string](trace.Unstructured.Object, "metadata", "namespace")
-		return m, tea.Batch(tea.HideCursor, m.kubectl.Get(ns, msg.ID))
+		return m.kubectlAction(msg.Data, msg.ID, m.kubectl.Get)
 	case navigator.EventItemEdit:
-		trace, ok := msg.Data.(*xplane.Resource)
-		if !ok {
-			return m, nil
-		}
-		ns, _ := ds.GetPath[string](trace.Unstructured.Object, "metadata", "namespace")
-		return m, tea.Batch(tea.HideCursor, m.kubectl.Edit(ns, msg.ID))
+		return m.kubectlAction(msg.Data, msg.ID, m.kubectl.Edit)
 	case navigator.EventItemDelete:
-		trace, ok := msg.Data.(*xplane.Resource)
-		if !ok {
-			return m, nil
-		}
-		ns, _ := ds.GetPath[string](trace.Unstructured.Object, "metadata", "namespace")
-		return m, tea.Batch(tea.HideCursor, m.kubectl.Delete(ns, msg.ID))
+		return m.kubectlAction(msg.Data, msg.ID, m.kubectl.Delete)
 	case navigator.EventItemCopied:
 		//nolint // ignore errors
 		clipboard.WriteAll(msg.ID)
 	case navigator.EventItemDescribe:
-		trace, ok := msg.Data.(*xplane.Resource)
-		if !ok {
-			return m, nil
-		}
-		ns, _ := ds.GetPath[string](trace.Unstructured.Object, "metadata", "namespace")
-		return m, tea.Batch(tea.HideCursor, m.kubectl.Describe(ns, msg.ID))
+		return m.kubectlAction(msg.Data, msg.ID, m.kubectl.Describe)
 	case navigator.EventItemPause:
-		trace, ok := msg.Data.(*xplane.Resource)
-		if !ok {
-			return m, nil
-		}
-		ns, _ := ds.GetPath[string](trace.Unstructured.Object, "metadata", "namespace")
-		return m, tea.Batch(tea.HideCursor, m.kubectl.Pause(ns, msg.ID))
+		return m.kubectlAction(msg.Data, msg.ID, m.kubectl.Pause)
 	case navigator.EventItemUnpause:
-		trace, ok := msg.Data.(*xplane.Resource)
-		if !ok {
-			return m, nil
-		}
-		ns, _ := ds.GetPath[string](trace.Unstructured.Object, "metadata", "namespace")
-		return m, tea.Batch(tea.HideCursor, m.kubectl.Unpause(ns, msg.ID))
+		return m.kubectlAction(msg.Data, msg.ID, m.kubectl.Unpause)
 	}
 
 	switch m.pane {
@@ -116,4 +86,13 @@ func (m *Model) onKey(msg tea.KeyMsg) tea.Cmd {
 	}
 
 	return nil
+}
+
+func (m Model) kubectlAction(data any, id string, action func(string, string) tea.Cmd) (tea.Model, tea.Cmd) {
+	trace, ok := data.(*xplane.Resource)
+	if !ok {
+		return m, nil
+	}
+	ns, _ := ds.GetPath[string](trace.Unstructured.Object, "metadata", "namespace")
+	return m, tea.Batch(tea.HideCursor, action(ns, id))
 }
