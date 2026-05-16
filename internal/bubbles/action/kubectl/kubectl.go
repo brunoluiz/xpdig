@@ -75,6 +75,17 @@ func (k *Cmd) Get(ns, resource string) tea.Cmd {
 	return k.shell.Pager("kubectl", args...)
 }
 
+func (k *Cmd) RemoveFinalizers(ns, resource string) tea.Cmd {
+	args := []string{"patch", resource, "-p", `{"metadata":{"finalizers":[]}}`, "--type", "merge"}
+	if ns != "" {
+		args = append(args, "-n", ns)
+	}
+	if k.kubectx != "" {
+		args = append(args, "--context", k.kubectx)
+	}
+	return k.shell.Exec("kubectl", args...)
+}
+
 func (k *Cmd) Delete(ns, resource string) tea.Cmd {
 	args := []string{"delete", resource}
 	if ns != "" {

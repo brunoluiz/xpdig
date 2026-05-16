@@ -172,7 +172,7 @@ func (m Model) ShortHelp() []key.Binding {
 	k := m.KeyMap
 	return append([]key.Binding{},
 		k.Up, k.Down, k.Copy,
-		k.Describe, k.Get, k.Edit, k.Delete,
+		k.Describe, k.Get, k.Edit, k.Delete, k.RemoveFinalizers,
 		k.Pause, k.Unpause,
 		k.Search, k.Help, k.Quit,
 	)

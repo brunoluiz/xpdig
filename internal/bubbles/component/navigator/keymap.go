@@ -17,15 +17,16 @@ type KeyMap struct {
 	SearchConfirm  key.Binding
 	SearchQuit     key.Binding
 
-	Copy          key.Binding
-	Get           key.Binding
-	Edit          key.Binding
-	Delete        key.Binding
-	Describe      key.Binding
-	Pause         key.Binding
-	Unpause       key.Binding
-	Help          key.Binding
-	CloseFullHelp key.Binding
+	Copy             key.Binding
+	Get              key.Binding
+	Edit             key.Binding
+	Delete           key.Binding
+	RemoveFinalizers key.Binding
+	Describe         key.Binding
+	Pause            key.Binding
+	Unpause          key.Binding
+	Help             key.Binding
+	CloseFullHelp    key.Binding
 }
 
 // DefaultKeyMap returns a default set of keybindings.
@@ -92,6 +93,10 @@ func DefaultKeyMap() KeyMap {
 		Delete: key.NewBinding(
 			key.WithKeys("ctrl+d"),
 			key.WithHelp("ctrl+d", "delete"),
+		),
+		RemoveFinalizers: key.NewBinding(
+			key.WithKeys("ctrl+x"),
+			key.WithHelp("ctrl+x", "rm finalisers"),
 		),
 		Describe: key.NewBinding(
 			key.WithKeys("enter", "d"),

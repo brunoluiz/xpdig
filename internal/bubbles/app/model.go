@@ -21,6 +21,7 @@ type kubectl interface {
 	Describe(ns, resource string) tea.Cmd
 	Get(ns, resource string) tea.Cmd
 	Delete(ns, resource string) tea.Cmd
+	RemoveFinalizers(ns, resource string) tea.Cmd
 	Pause(ns, resource string) tea.Cmd
 	Unpause(ns, resource string) tea.Cmd
 }

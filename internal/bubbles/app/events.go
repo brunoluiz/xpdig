@@ -42,6 +42,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.kubectlAction(msg.Data, msg.ID, m.kubectl.Edit)
 	case navigator.EventItemDelete:
 		return m.kubectlAction(msg.Data, msg.ID, m.kubectl.Delete)
+	case navigator.EventItemRemoveFinalizers:
+		return m.kubectlAction(msg.Data, msg.ID, m.kubectl.RemoveFinalizers)
 	case navigator.EventItemCopied:
 		//nolint // ignore errors
 		clipboard.WriteAll(msg.ID)

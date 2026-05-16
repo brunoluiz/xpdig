@@ -39,6 +39,11 @@ type EventItemDelete struct {
 	Data any
 }
 
+type EventItemRemoveFinalizers struct {
+	ID   string
+	Data any
+}
+
 type EventItemPause struct {
 	ID   string
 	Data any
@@ -240,6 +245,10 @@ func (m *Model) onKey(msg tea.KeyMsg) tea.Cmd {
 	case key.Matches(msg, m.KeyMap.Delete):
 		return func() tea.Msg {
 			return EventItemDelete{ID: m.Current().ID, Data: m.Current().Data}
+		}
+	case key.Matches(msg, m.KeyMap.RemoveFinalizers):
+		return func() tea.Msg {
+			return EventItemRemoveFinalizers{ID: m.Current().ID, Data: m.Current().Data}
 		}
 	case key.Matches(msg, m.KeyMap.Edit):
 		return func() tea.Msg {

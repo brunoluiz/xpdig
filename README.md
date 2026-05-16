@@ -81,6 +81,7 @@ crossplane beta trace -o json <> | xpdig trace --stdin
 - `y`: executes `kubectl get` on the resource
 - `e`: executes `kubectl edit` on the resource
 - `ctrl+d`: executes `kubectl delete` on the resource (bear in mind it might dangle waiting for finalisers)
+- `ctrl+x`: executes `kubectl patch` to remove all finalisers from the resource
 - `p/u`: Pause/unpause the resource
 - `/`: search (ENTER to submit, ESC to clear)
 - `n/N`: navigate between search results
