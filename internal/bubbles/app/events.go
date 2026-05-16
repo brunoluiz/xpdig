@@ -67,6 +67,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		ns, _ := ds.GetPath[string](trace.Unstructured.Object, "metadata", "namespace")
 		return m, tea.Batch(tea.HideCursor, m.kubectl.Describe(ns, msg.ID))
+	case navigator.EventItemPause:
+		trace, ok := msg.Data.(*xplane.Resource)
+		if !ok {
+			return m, nil
+		}
+		ns, _ := ds.GetPath[string](trace.Unstructured.Object, "metadata", "namespace")
+		return m, tea.Batch(tea.HideCursor, m.kubectl.Pause(ns, msg.ID))
+	case navigator.EventItemUnpause:
+		trace, ok := msg.Data.(*xplane.Resource)
+		if !ok {
+			return m, nil
+		}
+		ns, _ := ds.GetPath[string](trace.Unstructured.Object, "metadata", "namespace")
+		return m, tea.Batch(tea.HideCursor, m.kubectl.Unpause(ns, msg.ID))
 	}
 
 	switch m.pane {

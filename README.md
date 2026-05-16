@@ -24,6 +24,7 @@ to separately execute `kubectl`
 - 📋 Copy full qualified objects names straight from UI (API group + Kind + name)
 via shortcut (`c`)
 - ♻️ Automatically watch for changes on the resource
+- ⏯️ Pause or unpause resources using the [`crossplane.io/paused` annotation](https://docs.crossplane.io/latest/managed-resources/managed-resources/#paused)
 
 ## 📀 Install
 
@@ -80,6 +81,7 @@ crossplane beta trace -o json <> | xpdig trace --stdin
 - `y`: executes `kubectl get` on the resource
 - `e`: executes `kubectl edit` on the resource
 - `ctrl+d`: executes `kubectl delete` on the resource (bear in mind it might dangle waiting for finalisers)
+- `p/u`: Pause/unpause the resource
 - `/`: search (ENTER to submit, ESC to clear)
 - `n/N`: navigate between search results
 - `ctrl+f/ctrl+b | pageUp/pageDown`: jumps full page of results (up or down)

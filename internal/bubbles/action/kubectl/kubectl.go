@@ -29,6 +29,30 @@ func (k *Cmd) Edit(ns, resource string) tea.Cmd {
 	return k.shell.Exec("kubectl", args...)
 }
 
+func (k *Cmd) Pause(ns, resource string) tea.Cmd {
+	args := []string{"annotate"}
+	if ns != "" {
+		args = append(args, "-n", ns)
+	}
+	if k.kubectx != "" {
+		args = append(args, "--context", k.kubectx)
+	}
+	args = append(args, resource, "--overwrite", "crossplane.io/paused=true")
+	return k.shell.Exec("kubectl", args...)
+}
+
+func (k *Cmd) Unpause(ns, resource string) tea.Cmd {
+	args := []string{"annotate"}
+	if ns != "" {
+		args = append(args, "-n", ns)
+	}
+	if k.kubectx != "" {
+		args = append(args, "--context", k.kubectx)
+	}
+	args = append(args, resource, "--overwrite", "crossplane.io/paused-")
+	return k.shell.Exec("kubectl", args...)
+}
+
 func (k *Cmd) Describe(ns, resource string) tea.Cmd {
 	args := []string{"describe", resource}
 	if ns != "" {

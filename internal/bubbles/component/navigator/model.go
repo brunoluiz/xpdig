@@ -173,6 +173,7 @@ func (m Model) ShortHelp() []key.Binding {
 	return append([]key.Binding{},
 		k.Up, k.Down, k.Copy,
 		k.Describe, k.Get, k.Edit, k.Delete,
+		k.Pause, k.Unpause,
 		k.Search, k.Help, k.Quit,
 	)
 }
