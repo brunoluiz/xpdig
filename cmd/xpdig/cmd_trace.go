@@ -27,7 +27,7 @@ func cmdTrace() *cli.Command {
 	return &cli.Command{
 		Usage: `Explore tracing from Crossplane. Usage is available through arguments or data stream
 1. To load it straight from a live resource using the crossplane CLI, do 'xpdig trace <object name>'
-2. To load it from a trace JSON file, do 'crossplane beta trace -o json <> | xpdig trace --stdin'
+2. To load it from a trace JSON file, do 'crossplane resource trace -o json <> | xpdig trace --stdin'
 
 Live mode is only available for (1) through the use of --watch / --watch-interval (see flag usage below)`,
 		Name:    "trace",
@@ -36,7 +36,7 @@ Live mode is only available for (1) through the use of --watch / --watch-interva
 			&cli.StringFlag{
 				Name:  "cmd",
 				Usage: "Which binary should it use to generate the JSON trace",
-				Value: "crossplane beta trace -o json",
+				Value: "crossplane resource trace -o json",
 			},
 			&cli.StringFlag{Name: "context", Aliases: []string{"ctx"}, Usage: "Kubernetes context to be used"},
 			&cli.StringFlag{Name: "namespace", Aliases: []string{"n", "ns"}, Usage: "Kubernetes namespace to be used"},
