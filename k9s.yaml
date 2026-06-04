@@ -9,6 +9,7 @@ plugins:
       - all
     command: sh
     background: false
+    # If using an older CLI pre-stable trace release, you need to add `--cmd "crossplane beta trace -o json"`
     args:
       - -c
       - xpdig trace -n $([[ $NAMESPACE = "-" ]] && echo "default" || echo "$NAMESPACE") --context $CONTEXT $RESOURCE_NAME.$RESOURCE_GROUP/$NAME
