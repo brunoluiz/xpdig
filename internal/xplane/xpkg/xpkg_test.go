@@ -27,6 +27,13 @@ import (
 	pkgv1beta1 "github.com/crossplane/crossplane/apis/pkg/v1beta1"
 )
 
+const (
+	testElseKO         = "ElseKO"
+	testRandomGKReason = "Should return false for a random GK"
+	testRandomGKGroup  = "foo"
+	testRandomGKKind   = "bar"
+)
+
 func TestIsPackageType(t *testing.T) {
 	type args struct {
 		gk schema.GroupKind
@@ -94,12 +101,12 @@ func TestIsPackageType(t *testing.T) {
 				ok: false,
 			},
 		},
-		"ElseKO": {
-			reason: "Should return false for a random GK",
+		testElseKO: {
+			reason: testRandomGKReason,
 			args: args{
 				gk: schema.GroupKind{
-					Group: "foo",
-					Kind:  "bar",
+					Group: testRandomGKGroup,
+					Kind:  testRandomGKKind,
 				},
 			},
 			want: want{

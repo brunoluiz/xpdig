@@ -7,8 +7,8 @@ golangci-lint = "2.14.0"
 [tasks.ci]
 description = "Run linting, formatting, vetting, tests, module tidy, and build"
 run = [
-  "golangci-lint run ./...",
   "gofumpt -l -w .",
+  "golangci-lint run ./...",
   "go vet ./...",
   "go test -race -cover ./...",
   "go mod tidy",
