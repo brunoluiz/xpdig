@@ -13,9 +13,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: stable
+      - uses: jdx/mise-action@v4
 
-      - run: make install ci
+      - run: mise run ci
