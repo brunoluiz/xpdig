@@ -10,7 +10,7 @@ require (
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/crossplane/crossplane v1.20.7
 	github.com/crossplane/crossplane-runtime v1.20.6
-	github.com/google/go-containerregistry v0.20.7
+	github.com/google/go-containerregistry v0.21.6
 	github.com/mattn/go-runewidth v0.0.23
 	github.com/mistakenelf/teacup v0.4.1
 	github.com/urfave/cli/v3 v3.8.0
