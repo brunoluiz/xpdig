@@ -19,8 +19,10 @@ import (
 type searchMode int
 
 type DataRow struct {
-	ID   string
-	Data any
+	ID        string
+	Key       string // unique tree-path key, used for collapse state (ID may repeat)
+	ParentKey string
+	Data      any
 
 	Columns []string
 	Color   lipgloss.TerminalColor
@@ -62,7 +64,12 @@ type Model struct {
 	cursorBySearchCursor map[int]int
 	searchCursorByCursor map[int]int
 
-	data []DataRow
+	data      []DataRow
+	visible   []DataRow
+	collapsed map[string]bool
+
+	childCounts map[string]int
+	parents     map[string]string
 }
 
 func New(
@@ -85,6 +92,7 @@ func New(
 		showHelp: true,
 		Help:     help.New(),
 
+		collapsed:            map[string]bool{},
 		searchCursor:         0,
 		cursorBySearchCursor: map[int]int{},
 		searchCursorByCursor: map[int]int{},
@@ -126,13 +134,65 @@ func (m Model) View() string {
 
 func (m *Model) SetData(data []DataRow) {
 	m.data = data
+	m.childCounts = make(map[string]int, len(data))
+	m.parents = make(map[string]string, len(data))
+	for _, d := range data {
+		m.parents[d.Key] = d.ParentKey
+		if d.ParentKey != "" {
+			m.childCounts[d.ParentKey]++
+		}
+	}
+	m.refreshVisible("")
 	m.doLoadTable()
+}
+
+// refreshVisible rebuilds the visible rows from the collapsed state, keeping the
+// cursor on the row identified by keepID (or the current row when empty).
+func (m *Model) refreshVisible(keepKey string) {
+	if keepKey == "" && m.cursor < len(m.visible) {
+		keepKey = m.visible[m.cursor].Key
+	}
+
+	known := map[string]bool{}
+	for _, d := range m.data {
+		known[d.Key] = true
+	}
+	for id := range m.collapsed {
+		if !known[id] {
+			delete(m.collapsed, id)
+		}
+	}
+
+	hidden := map[string]bool{}
+	m.visible = m.visible[:0:0]
+	for _, d := range m.data {
+		if d.ParentKey != "" && (m.collapsed[d.ParentKey] || hidden[d.ParentKey]) {
+			hidden[d.Key] = true
+			continue
+		}
+		m.visible = append(m.visible, d)
+	}
+
+	m.cursor = 0
+	for i, d := range m.visible {
+		if d.Key == keepKey {
+			m.cursor = i
+			break
+		}
+	}
+	m.table.SetCursor(m.cursor)
+	m.searchCursor = 0
+	m.cursorBySearchCursor = map[int]int{}
+	m.searchCursorByCursor = map[int]int{}
+	if m.searchMode == searchModeFilter {
+		m.doSearchIndex()
+	}
 }
 
 func (m *Model) doLoadTable() {
 	rows := []table.Row{}
 	searchTerm := strings.ToLower(m.searchInput.Value())
-	for k, v := range m.data {
+	for k, v := range m.visible {
 		s := lipgloss.NewStyle()
 		if m.cursor != k {
 			s = s.Foreground(v.Color)
@@ -143,7 +203,10 @@ func (m *Model) doLoadTable() {
 		}
 
 		cols := []table.Cell{}
-		for _, col := range v.Columns {
+		for i, col := range v.Columns {
+			if i == 0 && m.collapsed[v.Key] && m.childCounts[v.Key] > 0 {
+				col = fmt.Sprintf("%s ▸ (+%d)", col, m.childCounts[v.Key])
+			}
 			cols = append(cols, table.Cell{Value: col, Style: s})
 		}
 
@@ -174,6 +237,7 @@ func (m Model) ShortHelp() []key.Binding {
 		k.Up, k.Down, k.Copy,
 		k.Describe, k.Get, k.Edit, k.Delete, k.RemoveFinalizers,
 		k.Pause, k.Unpause,
+		k.Toggle, k.CollapseAll, k.ExpandAll,
 		k.Search, k.Help, k.Quit,
 	)
 }
@@ -184,7 +248,12 @@ func (m Model) FullHelp() [][]key.Binding {
 	return append(kb, []key.Binding{k.Quit, k.CloseFullHelp})
 }
 
-func (m Model) Current() *DataRow          { return &m.data[m.cursor] }
+func (m Model) Current() *DataRow {
+	if len(m.visible) == 0 {
+		return &DataRow{}
+	}
+	return &m.visible[min(max(m.cursor, 0), len(m.visible)-1)]
+}
 func (m *Model) setSize(width, height int) { m.width = width; m.height = height }
 
 func (m Model) helpView() string {

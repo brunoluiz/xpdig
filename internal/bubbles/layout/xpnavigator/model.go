@@ -224,17 +224,18 @@ func (m *Model) setData(data *xplane.Resource) {
 	m.ready = true
 	rows := []navigator.DataRow{}
 	m.kind = data.Unstructured.GroupVersionKind().GroupKind()
-	m.traceToRows(data, &rows, 0, []string{}, []bool{})
+	m.traceToRows(data, &rows, 0, "", 0, []string{}, []bool{})
 	m.navigator.SetData(rows)
 }
 
-func (m Model) traceToRows(v *xplane.Resource, rows *[]navigator.DataRow, depth int, currentPath []string, isLastChilds []bool) {
+func (m Model) traceToRows(v *xplane.Resource, rows *[]navigator.DataRow, depth int, parentKey string, idx int, currentPath []string, isLastChilds []bool) {
 	name := fmt.Sprintf("%s/%s", v.Unstructured.GetKind(), v.Unstructured.GetName())
 	group := v.Unstructured.GetObjectKind().GroupVersionKind().Group
 	row := navigator.DataRow{
-		ID:      fmt.Sprintf("%s.%s/%s", v.Unstructured.GetKind(), group, v.Unstructured.GetName()),
-		Data:    v,
-		Columns: []string{},
+		ID:        fmt.Sprintf("%s.%s/%s", v.Unstructured.GetKind(), group, v.Unstructured.GetName()),
+		ParentKey: parentKey,
+		Data:      v,
+		Columns:   []string{},
 	}
 
 	// Build tree prefix
@@ -253,6 +254,7 @@ func (m Model) traceToRows(v *xplane.Resource, rows *[]navigator.DataRow, depth 
 			prefix += "├─ "
 		}
 	}
+	row.Key = fmt.Sprintf("%s/%d:%s", parentKey, idx, row.ID)
 	label := prefix + name
 
 	if v.Unstructured.GetAnnotations()["crossplane.io/paused"] == "true" {
@@ -310,7 +312,7 @@ func (m Model) traceToRows(v *xplane.Resource, rows *[]navigator.DataRow, depth 
 	// Recursively process children
 	for i, cv := range v.Children {
 		last := i == len(v.Children)-1
-		m.traceToRows(cv, rows, depth+1, path, append(isLastChilds, last))
+		m.traceToRows(cv, rows, depth+1, row.Key, i, path, append(isLastChilds, last))
 	}
 }
 

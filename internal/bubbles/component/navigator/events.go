@@ -116,24 +116,87 @@ func (m *Model) onSearch(msg tea.KeyMsg) tea.Cmd {
 }
 
 func (m *Model) doSearch() {
+	m.doSearchIndex()
+	if len(m.cursorBySearchCursor) > 0 {
+		m.searchCursor = 0
+		m.cursor = m.cursorBySearchCursor[0]
+		m.table.SetCursor(m.cursor)
+	}
+}
+
+func (m *Model) doSearchIndex() {
 	searchTerm := strings.ToLower(m.searchInput.Value())
 	m.cursorBySearchCursor = map[int]int{}
 	m.searchCursorByCursor = map[int]int{}
 
 	match := 0
-	for pos, v := range m.data {
+	for pos, v := range m.visible {
 		if strings.Contains(strings.ToLower(v.ID), searchTerm) {
 			m.cursorBySearchCursor[match] = pos
 			m.searchCursorByCursor[pos] = match
 			match++
 		}
 	}
+}
 
-	if len(m.cursorBySearchCursor) > 0 {
-		m.searchCursor = 0
-		m.cursor = m.cursorBySearchCursor[0]
-		m.table.SetCursor(m.cursor)
+// setCollapsed collapses/expands the selected row. Returns a focus event as the visible rows change.
+func (m *Model) setCollapsed(collapse bool) tea.Cmd {
+	if len(m.visible) == 0 {
+		return nil
 	}
+	cur := m.Current()
+	if m.childCounts[cur.Key] == 0 {
+		// Leaves have nothing to collapse or expand
+		return nil
+	}
+	if collapse {
+		m.collapsed[cur.Key] = true
+	} else {
+		delete(m.collapsed, cur.Key)
+	}
+	m.refreshVisible(cur.Key)
+	m.doLoadTable()
+	return m.focusCmd()
+}
+
+func (m *Model) toggleSelected() tea.Cmd {
+	if len(m.visible) == 0 {
+		return nil
+	}
+	return m.setCollapsed(!m.collapsed[m.Current().Key])
+}
+
+// setAllCollapsed collapses every nested resource (the root stays expanded) or expands everything.
+func (m *Model) setAllCollapsed(collapse bool) tea.Cmd {
+	if len(m.visible) == 0 {
+		return nil
+	}
+	keep := m.Current().Key
+	m.collapsed = map[string]bool{}
+	if collapse {
+		for _, d := range m.data {
+			if d.ParentKey != "" && m.childCounts[d.Key] > 0 {
+				m.collapsed[d.Key] = true
+			}
+		}
+		// A hidden cursor row falls back to its closest visible ancestor
+		for p := m.parents[keep]; p != ""; p = m.parents[p] {
+			if m.collapsed[p] {
+				keep = p
+			}
+		}
+	}
+	m.refreshVisible(keep)
+	m.doLoadTable()
+	return m.focusCmd()
+}
+
+func (m *Model) focusCmd() tea.Cmd {
+	if len(m.visible) == 0 {
+		return nil
+	}
+	id, data := m.Current().ID, m.Current().Data
+	return func() tea.Msg { return EventItemFocused{ID: id, Data: data} }
 }
 
 func (m *Model) onSearchInit() {
@@ -228,9 +291,24 @@ func (m *Model) onKey(msg tea.KeyMsg) tea.Cmd {
 		return m.onSearch(msg)
 	}
 
+	// Row actions need a selected row; only help and quit are meaningful on an empty list
+	if len(m.visible) == 0 && !key.Matches(msg, m.KeyMap.Help, m.KeyMap.Quit) {
+		return nil
+	}
+
 	switch {
 	case key.Matches(msg, m.KeyMap.Search):
 		m.onSearchInit()
+	case key.Matches(msg, m.KeyMap.Toggle):
+		return m.toggleSelected()
+	case key.Matches(msg, m.KeyMap.Collapse):
+		return m.setCollapsed(true)
+	case key.Matches(msg, m.KeyMap.Expand):
+		return m.setCollapsed(false)
+	case key.Matches(msg, m.KeyMap.CollapseAll):
+		return m.setAllCollapsed(true)
+	case key.Matches(msg, m.KeyMap.ExpandAll):
+		return m.setAllCollapsed(false)
 	case key.Matches(msg, m.KeyMap.Help):
 		m.showHelp = !m.showHelp
 		// m.Help.ShowAll = !m.Help.ShowAll
