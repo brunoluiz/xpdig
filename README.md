@@ -96,6 +96,9 @@ xpdig trace --context <context> --cmd "crossplane beta trace -o json" Object/hel
 - `p/u`: Pause/unpause the resource
 - `/`: search (ENTER to submit, ESC to clear)
 - `n/N`: navigate between search results
+- `tab`: toggle collapse of the selected resource's children
+- `left/right`: collapse/expand the selected resource
+- `[`/`]`: collapse/expand all nested resources
 - `ctrl+f/ctrl+b | pageUp/pageDown`: jumps full page of results (up or down)
 - `q/ctrl+c`: quit
 

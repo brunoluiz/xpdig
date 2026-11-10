@@ -25,13 +25,18 @@ type KeyMap struct {
 	Describe         key.Binding
 	Pause            key.Binding
 	Unpause          key.Binding
+	Toggle           key.Binding
+	Collapse         key.Binding
+	Expand           key.Binding
+	CollapseAll      key.Binding
+	ExpandAll        key.Binding
 	Help             key.Binding
 	CloseFullHelp    key.Binding
 }
 
 // DefaultKeyMap returns a default set of keybindings.
 func DefaultKeyMap() KeyMap {
-	return KeyMap{
+	return withCollapseKeys(KeyMap{
 		Bottom: key.NewBinding(
 			key.WithKeys("bottom"),
 			key.WithHelp("end", "bottom"),
@@ -116,5 +121,15 @@ func DefaultKeyMap() KeyMap {
 			key.WithKeys("q"),
 			key.WithHelp("q", "quit"),
 		),
-	}
+	})
+}
+
+// withCollapseKeys adds the tree collapse/expand bindings.
+func withCollapseKeys(k KeyMap) KeyMap {
+	k.Toggle = key.NewBinding(key.WithKeys("tab"), key.WithHelp("tab", "toggle collapse"))
+	k.Collapse = key.NewBinding(key.WithKeys("left"), key.WithHelp("←", "collapse"))
+	k.Expand = key.NewBinding(key.WithKeys("right"), key.WithHelp("→", "expand"))
+	k.CollapseAll = key.NewBinding(key.WithKeys("["), key.WithHelp("[", "collapse all"))
+	k.ExpandAll = key.NewBinding(key.WithKeys("]"), key.WithHelp("]", "expand all"))
+	return k
 }
